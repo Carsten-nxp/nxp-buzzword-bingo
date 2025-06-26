@@ -33,6 +33,19 @@
       font-size: 1em;
       margin: 5px;
     }
+    .np-button {
+      border-radius: 24px;
+      background-color: #231f20;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .np-button:hover {
+      background-color: #444;
+    }
     #bingoContainer {
       display: inline-block;
       background: #ffffff;
@@ -40,7 +53,6 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       margin-top: 20px;
-      position: relative;
     }
     #conferenceLabel {
       font-weight: bold;
@@ -56,24 +68,17 @@
     }
     .cell {
       padding: 15px;
-      background: white;
       border: 2px solid #ccc;
       border-radius: 8px;
       cursor: pointer;
       transition: background 0.2s;
       font-size: 0.9em;
+      color: black;
     }
     .cell.marked {
-      background: #00615e;
+      background: #00615e !important;
       color: white;
       border-color: #004e4b;
-    }
-    button {
-      border-radius: 5px;
-      border: none;
-      background: #00615e;
-      color: white;
-      cursor: pointer;
     }
     #bingoMessage {
       margin-top: 10px;
@@ -81,11 +86,12 @@
       color: #004e4b;
       font-weight: bold;
     }
-    #bingoLogo {
-      margin-top: 20px;
+    #branding {
+      margin-top: 40px;
     }
-    #bingoLogo img {
+    #branding img {
       height: 40px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -96,133 +102,131 @@
   <div id="setupArea" style="display:none;">
     <input id="conferenceName" placeholder="Name der Konferenz eingeben..." /><br>
     <textarea id="customWords" placeholder="Gib bis zu 25 Buzzwords ein, getrennt durch Kommas...">Nutzerzentrierung, OZG 2.0, Registermodernisierung, Einer für Alle, Digitale Identität, FITKO, Reifegrad, Kollaboration, Skalierbarkeit, EfA-Portal, Digitale Souveränität, Wirkungsorientierung, Cloud-Marktplatz, Zielbild, FIM, Standardisierung, Transformation, Koordinierungsstelle, Ende-zu-Ende, Umsetzungshindernis, Stakeholder, Effizienzhebel, Plattformökonomie, Förderfähigkeit, Agilität</textarea><br>
-    <button onclick="generateBingo()">Buzzword-Bingo starten</button>
+    <button class="np-button" onclick="generateBingo()">Buzzword-Bingo starten</button>
   </div>
 
   <div id="bingoContainer">
+    <div id="branding">
+      <div style="font-size: 0.9em;">Ein Tool von next:public</div>
+      <img src="nextpublic-logo.png" alt="next:public Logo">
+    </div>
     <p id="conferenceLabel"></p>
     <div id="bingoGrid"></div>
     <div id="bingoMessage"></div>
-    <button onclick="generateBingo()">Neues Bingo erzeugen</button>
-    <button onclick="captureBingo()">Bingo teilen (als Bild)</button>
-    <button onclick="toggleInput()">Eigene Begriffe eingeben</button>
-    <div id="bingoLogoLabel" style="font-size: 0.9em; color: #666; margin-top: 20px;">Ein Tool von</div>
-    <div id="bingoLogo">
-      <img src="nextpublic-logo.jpg" alt="next:public Logo">
-    </div>
+    <button class="np-button" onclick="generateBingo()">Neues Bingo erzeugen</button>
+    <button class="np-button" onclick="captureBingo()">Bingo teilen (als Bild)</button>
+    <button class="np-button" onclick="toggleInput()">Eigene Begriffe eingeben</button>
   </div>
 
-  <!-- Footer entfernt -->
-<!--
-    <div style="margin-top: 40px; font-size: 0.9em; color: #888;">
-      <div style="margin-bottom: 10px;">Ein Tool von <a href="https://www.nextpublic.de" target="_blank" style="color: #888; text-decoration: none;">next:public</a></div>
-      <a href="https://www.nextpublic.de" target="_blank">
-        <img src="nextpublic-logo.jpg" alt="next:public Logo" style="height: 50px;">
-      </a>
-    </div>
-  -->
+<script>
+  const npColors = ["#bfe0ff", "#87e0b3", #dfa5e3", "#d2e2f7", "#a3e4d7"];
+  function randomColor() {
+    return npColors[Math.floor(Math.random() * npColors.length)];
+  }
 
-  <script>
-    window.onload = function() {
-      generateBingo();
-    };
-    function toggleInput() {
-      document.getElementById("setupArea").style.display = "block";
-      document.getElementById("bingoContainer").style.display = "none";
+  window.onload = function() {
+    generateBingo();
+  };
+  function toggleInput() {
+    document.getElementById("setupArea").style.display = "block";
+    document.getElementById("bingoContainer").style.display = "none";
+  }
+  const gridSize = 5;
+
+  function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex != 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
-    const gridSize = 5;
+    return array;
+  }
 
-    function shuffle(array) {
-      let currentIndex = array.length, randomIndex;
-      while (currentIndex != 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+  function generateBingo() {
+    const wordInput = document.getElementById("customWords").value;
+    const userWords = wordInput.split(",").map(w => w.trim()).filter(Boolean);
+    const defaultWords = [
+      "Nutzerzentrierung", "OZG 2.0", "Registermodernisierung", "Einer für Alle", "Digitale Identität",
+      "FITKO", "Reifegrad", "Kollaboration", "Skalierbarkeit", "EfA-Portal", "Digitale Souveränität",
+      "Wirkungsorientierung", "Cloud-Marktplatz", "Zielbild", "FIM", "Standardisierung", "Transformation",
+      "Koordinierungsstelle", "Ende-zu-Ende", "Umsetzungshindernis", "Stakeholder", "Effizienzhebel",
+      "Plattformökonomie", "Förderfähigkeit", "Agilität"
+    ];
+    const words = shuffle([...new Set([...defaultWords, ...userWords])]);
+    const gridEl = document.getElementById("bingoGrid");
+    const messageEl = document.getElementById("bingoMessage");
+    const confLabel = document.getElementById("conferenceLabel");
+    const confInput = document.getElementById("conferenceName").value;
+
+    if (words.length < 25) {
+      alert("Bitte gib mindestens 25 Wörter ein.");
+      return;
+    }
+
+    document.getElementById("setupArea").style.display = "none";
+    document.getElementById("bingoContainer").style.display = "block";
+
+    messageEl.innerHTML = "";
+    gridEl.innerHTML = "";
+    confLabel.innerText = confInput.trim();
+
+    const grid = shuffle([...words]).slice(0, gridSize * gridSize);
+
+    for (let i = 0; i < grid.length; i++) {
+      const cell = document.createElement("div");
+      cell.textContent = grid[i];
+      cell.className = "cell";
+      cell.style.backgroundColor = randomColor();
+      cell.onclick = () => {
+        cell.classList.toggle("marked");
+        checkBingo();
+      };
+      gridEl.appendChild(cell);
+    }
+  }
+
+  function checkBingo() {
+    const cells = document.querySelectorAll(".cell");
+    const rows = [], cols = [], diag1 = [], diag2 = [];
+    for (let i = 0; i < gridSize; i++) {
+      rows[i] = [];
+      cols[i] = [];
+    }
+    cells.forEach((cell, idx) => {
+      const row = Math.floor(idx / gridSize);
+      const col = idx % gridSize;
+      if (cell.classList.contains("marked")) {
+        rows[row].push(true);
+        cols[col].push(true);
+        if (row === col) diag1.push(true);
+        if (row + col === gridSize - 1) diag2.push(true);
+      } else {
+        rows[row].push(false);
+        cols[col].push(false);
+        if (row === col) diag1.push(false);
+        if (row + col === gridSize - 1) diag2.push(false);
       }
-      return array;
-    }
-
-    function generateBingo() {
-      const wordInput = document.getElementById("customWords").value;
-      const userWords = wordInput.split(",").map(w => w.trim()).filter(Boolean);
-      const defaultWords = [
-        "Nutzerzentrierung", "OZG 2.0", "Registermodernisierung", "Einer für Alle", "Digitale Identität",
-        "FITKO", "Reifegrad", "Kollaboration", "Skalierbarkeit", "EfA-Portal", "Digitale Souveränität",
-        "Wirkungsorientierung", "Cloud-Marktplatz", "Zielbild", "FIM", "Standardisierung", "Transformation",
-        "Koordinierungsstelle", "Ende-zu-Ende", "Umsetzungshindernis", "Stakeholder", "Effizienzhebel",
-        "Plattformökonomie", "Förderfähigkeit", "Agilität"
-      ];
-      const words = shuffle([...new Set([...defaultWords, ...userWords])]);
-
-      const gridEl = document.getElementById("bingoGrid");
-      const messageEl = document.getElementById("bingoMessage");
-      const confLabel = document.getElementById("conferenceLabel");
-      const confInput = document.getElementById("conferenceName").value;
-
-      if (words.length < 25) {
-        alert("Bitte gib mindestens 25 Wörter ein.");
+    });
+    for (let i = 0; i < gridSize; i++) {
+      if (rows[i].every(Boolean) || cols[i].every(Boolean)) {
+        document.getElementById("bingoMessage").innerText = "🎉 BINGO!";
         return;
       }
-
-      document.getElementById("setupArea").style.display = "none";
-      document.getElementById("bingoContainer").style.display = "block";
-
-      messageEl.innerHTML = "";
-      gridEl.innerHTML = "";
-      confLabel.innerText = confInput.trim();
-
-      const grid = shuffle([...words]).slice(0, gridSize * gridSize);
-
-      for (let i = 0; i < grid.length; i++) {
-        const cell = document.createElement("div");
-        cell.textContent = grid[i];
-        cell.className = "cell";
-        cell.onclick = () => {
-          cell.classList.toggle("marked");
-          checkBingo();
-        };
-        gridEl.appendChild(cell);
-      }
     }
-
-    function checkBingo() {
-      const cells = document.querySelectorAll(".cell");
-      const rows = Array.from({length: gridSize}, () => []);
-      const cols = Array.from({length: gridSize}, () => []);
-      const diag1 = [], diag2 = [];
-
-      cells.forEach((cell, idx) => {
-        const row = Math.floor(idx / gridSize);
-        const col = idx % gridSize;
-        const isMarked = cell.classList.contains("marked");
-
-        rows[row][col] = isMarked;
-        cols[col][row] = isMarked;
-
-        if (row === col) diag1[row] = isMarked;
-        if (row + col === gridSize - 1) diag2[row] = isMarked;
-      });
-
-      for (let i = 0; i < gridSize; i++) {
-        if (rows[i].every(Boolean) || cols[i].every(Boolean)) {
-          document.getElementById("bingoMessage").innerText = "🎉 BINGO!";
-          return;
-        }
-      }
-
-      if (diag1.every(Boolean) || diag2.every(Boolean)) {
-        document.getElementById("bingoMessage").innerText = "🎉 BINGO!";
-      }
+    if (diag1.every(Boolean) || diag2.every(Boolean)) {
+      document.getElementById("bingoMessage").innerText = "🎉 BINGO!";
     }
+  }
 
-    function captureBingo() {
-      html2canvas(document.querySelector("#bingoContainer")).then(canvas => {
-        const link = document.createElement("a");
-        link.download = "buzzword-bingo.png";
-        link.href = canvas.toDataURL();
-        link.click();
-      });
-    }
-  </script>
+  function captureBingo() {
+    html2canvas(document.querySelector("#bingoContainer")).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "buzzword-bingo.png";
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+</script>
 </body>
 </html>
