@@ -96,9 +96,9 @@
 
   <h1>Buzzword-Bingo Konferenzmodus</h1>
 
-  <div id="setupArea">
+  <div id="setupArea" style="display:none;">
     <input id="conferenceName" placeholder="Name der Konferenz eingeben..." /><br>
-    <textarea id="customWords" placeholder="Gib eigene Buzzwords ein (durch Komma getrennt) – optional. Sie werden zu den vorhandenen Begriffen ergänzt.">Nutzerzentrierung, OZG 2.0, Registermodernisierung, Einer für Alle, Digitale Identität, FITKO, Reifegrad, Kollaboration, Skalierbarkeit, EfA-Portal, Digitale Souveränität, Wirkungsorientierung, Cloud-Marktplatz, Zielbild, FIM, Standardisierung, Transformation, Koordinierungsstelle, Ende-zu-Ende, Umsetzungshindernis, Stakeholder, Effizienzhebel, Plattformökonomie, Förderfähigkeit, Agilität</textarea><br>
+    <textarea id="customWords" placeholder="Gib bis zu 25 Buzzwords ein, getrennt durch Kommas...">Nutzerzentrierung, OZG 2.0, Registermodernisierung, Einer für Alle, Digitale Identität, FITKO, Reifegrad, Kollaboration, Skalierbarkeit, EfA-Portal, Digitale Souveränität, Wirkungsorientierung, Cloud-Marktplatz, Zielbild, FIM, Standardisierung, Transformation, Koordinierungsstelle, Ende-zu-Ende, Umsetzungshindernis, Stakeholder, Effizienzhebel, Plattformökonomie, Förderfähigkeit, Agilität</textarea><br>
     <button onclick="generateBingo()">Buzzword-Bingo starten</button>
   </div>
 
@@ -108,14 +108,23 @@
     <div id="bingoMessage"></div>
     <button onclick="generateBingo()">Neues Bingo erzeugen</button>
     <button onclick="captureBingo()">Bingo teilen (als Bild)</button>
-  </div>
+  <button onclick="toggleInput()">Eigene Begriffe eingeben</button>
+    </div>
 
   <footer>
+    Ein Tool von <a href="https://www.nextpublic.de" target="_blank" style="color: #888; text-decoration: none;">next:public</a>
+    <a href="https://www.nextpublic.de" target="_blank">
+      <img src="https://www.nextpublic.de/favicon.ico" alt="next:public Logo">
+    </a>
     Ein Tool von next:public
     <img src="https://www.nextpublic.de/favicon.ico" alt="next:public Logo">
   </footer>
 
   <script>
+    function toggleInput() {
+      document.getElementById("setupArea").style.display = "block";
+      document.getElementById("bingoContainer").style.display = "none";
+    }
     const gridSize = 5;
 
     function shuffle(array) {
@@ -146,7 +155,10 @@
       const confLabel = document.getElementById("conferenceLabel");
       const confInput = document.getElementById("conferenceName").value;
 
-      
+      if (words.length < 25) {
+        alert("Bitte gib mindestens 25 Wörter ein.");
+        return;
+      }
 
       document.getElementById("setupArea").style.display = "none";
       document.getElementById("bingoContainer").style.display = "block";
