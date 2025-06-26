@@ -40,6 +40,7 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       margin-top: 20px;
+      position: relative;
     }
     #conferenceLabel {
       font-weight: bold;
@@ -80,15 +81,11 @@
       color: #004e4b;
       font-weight: bold;
     }
-    footer {
-      margin-top: 40px;
-      font-size: 0.8em;
-      color: #888;
+    #bingoLogo {
+      margin-top: 20px;
     }
-    footer img {
-      height: 20px;
-      vertical-align: middle;
-      margin-left: 5px;
+    #bingoLogo img {
+      height: 40px;
     }
   </style>
 </head>
@@ -108,19 +105,20 @@
     <div id="bingoMessage"></div>
     <button onclick="generateBingo()">Neues Bingo erzeugen</button>
     <button onclick="captureBingo()">Bingo teilen (als Bild)</button>
-  <button onclick="toggleInput()">Eigene Begriffe eingeben</button>
+    <button onclick="toggleInput()">Eigene Begriffe eingeben</button>
+    <div id="bingoLogo">
+      <img src="nextpublic-logo.jpg" alt="next:public Logo">
     </div>
-
-  
-<footer>
-  <div style="margin-top: 40px; font-size: 0.9em; color: #888;">
-    <div style="margin-bottom: 10px;">Ein Tool von <a href="https://www.nextpublic.de" target="_blank" style="color: #888; text-decoration: none;">next:public</a></div>
-    <a href="https://www.nextpublic.de" target="_blank">
-      <img src="nextpublic-logo.jpg" alt="next:public Logo" style="height: 50px;">
-    </a>
   </div>
-</footer>
 
+  <footer>
+    <div style="margin-top: 40px; font-size: 0.9em; color: #888;">
+      <div style="margin-bottom: 10px;">Ein Tool von <a href="https://www.nextpublic.de" target="_blank" style="color: #888; text-decoration: none;">next:public</a></div>
+      <a href="https://www.nextpublic.de" target="_blank">
+        <img src="nextpublic-logo.jpg" alt="next:public Logo" style="height: 50px;">
+      </a>
+    </div>
+  </footer>
 
   <script>
     window.onload = function() {
@@ -144,7 +142,6 @@
 
     function generateBingo() {
       const wordInput = document.getElementById("customWords").value;
-      
       const userWords = wordInput.split(",").map(w => w.trim()).filter(Boolean);
       const defaultWords = [
         "Nutzerzentrierung", "OZG 2.0", "Registermodernisierung", "Einer für Alle", "Digitale Identität",
@@ -154,7 +151,7 @@
         "Plattformökonomie", "Förderfähigkeit", "Agilität"
       ];
       const words = shuffle([...new Set([...defaultWords, ...userWords])]);
-    
+
       const gridEl = document.getElementById("bingoGrid");
       const messageEl = document.getElementById("bingoMessage");
       const confLabel = document.getElementById("conferenceLabel");
@@ -188,27 +185,31 @@
 
     function checkBingo() {
       const cells = document.querySelectorAll(".cell");
-      const rows = [], cols = [];
-      for (let i = 0; i < gridSize; i++) {
-        rows[i] = [];
-        cols[i] = [];
-      }
+      const rows = Array.from({length: gridSize}, () => []);
+      const cols = Array.from({length: gridSize}, () => []);
+      const diag1 = [], diag2 = [];
+
       cells.forEach((cell, idx) => {
         const row = Math.floor(idx / gridSize);
         const col = idx % gridSize;
-        if (cell.classList.contains("marked")) {
-          rows[row].push(true);
-          cols[col].push(true);
-        } else {
-          rows[row].push(false);
-          cols[col].push(false);
-        }
+        const isMarked = cell.classList.contains("marked");
+
+        rows[row][col] = isMarked;
+        cols[col][row] = isMarked;
+
+        if (row === col) diag1[row] = isMarked;
+        if (row + col === gridSize - 1) diag2[row] = isMarked;
       });
+
       for (let i = 0; i < gridSize; i++) {
         if (rows[i].every(Boolean) || cols[i].every(Boolean)) {
           document.getElementById("bingoMessage").innerText = "🎉 BINGO!";
           return;
         }
+      }
+
+      if (diag1.every(Boolean) || diag2.every(Boolean)) {
+        document.getElementById("bingoMessage").innerText = "🎉 BINGO!";
       }
     }
 
@@ -221,6 +222,5 @@
       });
     }
   </script>
-
 </body>
 </html>
