@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -28,13 +29,9 @@
       font-size: 1em;
     }
     input, button {
-      width: 90%;
-      max-width: 500px;
       padding: 10px;
       font-size: 1em;
-      margin: 5px auto;
-      display: block;
-      box-sizing: border-box;
+      margin: 5px;
     }
     #bingoContainer {
       display: inline-block;
@@ -44,7 +41,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       margin-top: 20px;
       position: relative;
-      max-width: 100%;
     }
     #conferenceLabel {
       font-weight: bold;
@@ -55,8 +51,7 @@
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 10px;
-      width: 100%;
-      max-width: 500px;
+      max-width: 600px;
       margin: 0 auto 20px auto;
     }
     .cell {
@@ -67,7 +62,6 @@
       cursor: pointer;
       transition: background 0.2s;
       font-size: 0.9em;
-      word-wrap: break-word;
     }
     .cell.marked {
       background: #00615e;
@@ -94,13 +88,10 @@
       height: 40px;
     }
 
-    @media (max-width: 500px) {
+    @media (max-width: 480px) {
       .cell {
+        font-size: 0.7em;
         padding: 10px;
-        font-size: 0.75em;
-      }
-      h1 {
-        font-size: 1.5em;
       }
     }
   </style>
@@ -110,8 +101,8 @@
   <h1>Buzzword-Bingo Konferenzmodus</h1>
 
   <div id="setupArea" style="display:none;">
-    <input id="conferenceName" placeholder="Name der Konferenz eingeben..." />
-    <textarea id="customWords" placeholder="Gib bis zu 25 Buzzwords ein, getrennt durch Kommas...">Nutzerzentrierung, OZG 2.0, Registermodernisierung, Einer für Alle, Digitale Identität, FITKO, Reifegrad, Kollaboration, Skalierbarkeit, EfA-Portal, Digitale Souveränität, Wirkungsorientierung, Cloud-Marktplatz, Zielbild, FIM, Standardisierung, Transformation, Koordinierungsstelle, Ende-zu-Ende, Umsetzungshindernis, Stakeholder, Effizienzhebel, Plattformökonomie, Förderfähigkeit, Agilität</textarea>
+    <input id="conferenceName" placeholder="Name der Konferenz eingeben..." /><br>
+    <textarea id="customWords" placeholder="Gib bis zu 25 Buzzwords ein, getrennt durch Kommas...">Nutzerzentrierung, OZG 2.0, Registermodernisierung, Einer für Alle, Digitale Identität, FITKO, Reifegrad, Kollaboration, Skalierbarkeit, EfA-Portal, Digitale Souveränität, Wirkungsorientierung, Cloud-Marktplatz, Zielbild, FIM, Standardisierung, Transformation, Koordinierungsstelle, Ende-zu-Ende, Umsetzungshindernis, Stakeholder, Effizienzhebel, Plattformökonomie, Förderfähigkeit, Agilität</textarea><br>
     <button onclick="generateBingo()">Buzzword-Bingo starten</button>
   </div>
 
